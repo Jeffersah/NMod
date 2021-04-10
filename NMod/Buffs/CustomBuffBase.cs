@@ -14,7 +14,7 @@ namespace NMod.Buffs
         public virtual string AssetPath => null;
         public virtual bool CanStack => true;
         public abstract bool IsDebuff { get; }
-        public abstract Color BuffColor { get; }
+        public virtual Color BuffColor => Color.white;
 
         public string IconPath => $"{ModPrefix}Assets/Import/{AssetPath ?? (InternalName + "/" + InternalName + "_buff.png")}";
 

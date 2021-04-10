@@ -17,7 +17,9 @@ namespace NMod.Items
 
         const float BASE_AMT = 0.2f;
         const float AMT_PER_STACK = 0.2f;
-        public override string InternalName => "panicnecklace";
+
+        public static string Name => "panicnecklace";
+        public override string InternalName => Name;
         public override ItemTier Tier => ItemTier.Tier1;
 
         public override void RegisterHooks(ItemIndex itemIndex)
