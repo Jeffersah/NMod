@@ -6,10 +6,12 @@
 
   <ItemGroup>
     <None Remove="assets" />
+    <None Remove="itemText.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="assets" />
+    <EmbeddedResource Include="itemText.txt" />
   </ItemGroup>
 
   <ItemGroup>

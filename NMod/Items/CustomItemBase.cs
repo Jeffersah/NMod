@@ -22,6 +22,7 @@ namespace NMod.Items
         public virtual string LoreToken => $"{InternalName}_LORE";
         public virtual bool CanRemove => false;
         public virtual bool Hidden => false;
+        public virtual ItemTag[] Tags => Array.Empty<ItemTag>();
         public abstract ItemTier Tier { get; }
 
         public ItemIndex Index { get; set; }
@@ -33,10 +34,6 @@ namespace NMod.Items
             return null;
         }
         public virtual void RegisterHooks(ItemIndex itemIndex)
-        {
-
-        }
-        public virtual void Update()
         {
 
         }

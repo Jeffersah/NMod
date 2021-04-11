@@ -12,7 +12,7 @@ namespace NMod
         public string Description { get; }
         public string LoreText { get; }
 
-        public NModItemAttribute(string friendlyName, string pickupText, string description, string loreText)
+        public NModItemAttribute(string friendlyName, string pickupText, string description, string loreText = null)
         {
             FriendlyName = friendlyName;
             PickupText = pickupText;

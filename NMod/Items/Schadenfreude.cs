@@ -6,19 +6,20 @@ using System.Text;
 namespace NMod.Items
 {
     [NModItem(
-          "Adrenaline",
-          "Deal more damage the lower your HP %",
-          "Deal up to <style=cIsUtility>25%</style> (+12.5% per stack) more damage as your HP % decreases.")]
-    class DesperateThymes : CustomItemBase
+          "Schadenfreude",
+          "Increase damage the lower the targets HP %",
+          "Deal up to <style=cIsUtility>25%</style> (+25% per stack) more damage to enemies at low health. Scales as target health decreases.")]
+    class Schadenfreude : CustomItemBase
     {
-        const float DAMAGE_BASE = .25f;
-        const float DAMAGE_STACK = 0.125f;
-        const float MAX_HP = 0.9f;
-        public static string Name => "desperatethymes";
+        const float HP_CEILING = 0.9f;
+        const float DMG_BUFF = 0.25f;
+        const float DMG_BUFF_PER = 0.25f;
+
+        public static string Name => nameof(Schadenfreude).ToLower();
         public override string InternalName => Name;
-        public override ItemTier Tier => ItemTier.Tier2;
+        public override ItemTier Tier => ItemTier.Tier3;
         public override ItemTag[] Tags => new ItemTag[] {
-            ItemTag.Damage
+            ItemTag.Damage,
         };
 
         public override void RegisterHooks(ItemIndex itemIndex)
@@ -33,11 +34,8 @@ namespace NMod.Items
                         int itemCount = attackerBody.master.inventory.GetItemCount(itemIndex);
                         if (itemCount > 0)
                         {
-                            float dmg_mult = DAMAGE_BASE + DAMAGE_STACK * (itemCount - 1);
-                            float hpPercent = Math.Min(MAX_HP, attackerBody.healthComponent.combinedHealthFraction);
-                            hpPercent /= MAX_HP;
-                            float add_mult = dmg_mult * (1 - hpPercent);
-                            damageInfo.damage += damageInfo.damage * add_mult;
+                            float dmgBoostPercent = 1 - (Math.Min(HP_CEILING, self.combinedHealthFraction) / HP_CEILING);
+                            damageInfo.damage *= 1 + dmgBoostPercent * StackUtils.LinearStack(itemCount, DMG_BUFF, DMG_BUFF_PER);
                         }
                     }
                 }

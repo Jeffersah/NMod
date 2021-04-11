@@ -8,8 +8,7 @@ namespace NMod.Items
     [NModItem(
           "Lucky Penny",
           "Gain gold when you enter a new stage",
-          "Gain <style=cIsUtility>25</style> (+25 per stack) gold when you enter a new stage. Payout increases with stage number.",
-          "\"Heads I win, Tails you Lose\"")]
+          "Gain <style=cIsUtility>25</style> (+25 per stack) gold when you enter a new stage. Payout increases with stage number.")]
     class LuckyPenny : CustomItemBase
     {
         const uint MONEY_GAIN_BASE = 25;
@@ -18,6 +17,9 @@ namespace NMod.Items
         public static string Name => "luckypenny";
         public override string InternalName => Name;
         public override ItemTier Tier => ItemTier.Tier1;
+        public override ItemTag[] Tags => new ItemTag[] {
+            ItemTag.Utility,
+        };
 
         //TODO: Detect what stage number you're on
         public override void RegisterHooks(ItemIndex itemIndex)

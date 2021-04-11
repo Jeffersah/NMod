@@ -4,6 +4,7 @@ using R2API;
 using RoR2;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -13,6 +14,9 @@ namespace NMod
 {
     static class NModLoader
     {
+        const string DEFAULT_LORE = "...";
+
+
         public static Dictionary<string, CustomItemBase> LoadedCustomItems { get; private set; }
         public static Dictionary<string, CustomBuffBase> LoadedCustomBuffs { get; private set; }
 
@@ -77,6 +81,34 @@ namespace NMod
 
         public static void InitItems(AssetBundle bundle)
         {
+            Dictionary<string, string> loreText = new Dictionary<string, string>();
+            using (var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("NMod.itemText.txt")))
+            {
+                StringBuilder loreTextBuilder = new StringBuilder();
+                string loreKey = null;
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    if(line.StartsWith("@lore"))
+                    {
+                        if(loreKey != null)
+                        {
+                            loreText.Add(loreKey, loreTextBuilder.ToString().Trim());
+                            loreTextBuilder.Clear();
+                        }
+                        loreKey = line.Substring(6).Trim();
+                    }
+                    else
+                    {
+                        loreTextBuilder.AppendLine(line.Trim());
+                    }
+                }
+                if(loreKey != null)
+                {
+                    loreText.Add(loreKey, loreTextBuilder.ToString().Trim());
+                }
+            }
+
             LoadedCustomItems = new Dictionary<string, CustomItemBase>();
             var customItemTypes = typeof(NModLoader).Assembly.GetTypes().Where(t => t.GetCustomAttribute<NModItemAttribute>() != null);
             var customItems = customItemTypes.Select(t =>
@@ -96,7 +128,7 @@ namespace NMod
             foreach (var customItem in customItems)
             {
                 if (customItem == null) continue;
-                LoadAssetsAndInit(customItem, bundle);
+                LoadAssetsAndInit(customItem, bundle, loreText);
             }
 
             NModMain.Log.LogMessage($"CustomItemManager added {customItems.Count()} items");
@@ -121,7 +153,7 @@ namespace NMod
             };
         }
 
-        private static void LoadAssetsAndInit(CustomItemBase item, AssetBundle bundle)
+        private static void LoadAssetsAndInit(CustomItemBase item, AssetBundle bundle, Dictionary<string, string> loreText)
         {
             GameObject prefab = bundle.LoadAsset<GameObject>(item.PrefabPath);
             Sprite pickupSprite = bundle.LoadAsset<Sprite>(item.IconPath);
@@ -148,6 +180,7 @@ namespace NMod
             itemDef.canRemove = item.CanRemove;
             itemDef.hidden = item.Hidden;
             itemDef.tier = item.Tier;
+            itemDef.tags = item.Tags;
 
             var displayRules = item.GetItemDisplayRules(prefab);
             var ci = new CustomItem(itemDef, displayRules);
@@ -160,7 +193,7 @@ namespace NMod
             LanguageAPI.Add(item.NameToken, attrib.FriendlyName);
             LanguageAPI.Add(item.PickupToken, attrib.PickupText);
             LanguageAPI.Add(item.DescriptionToken, attrib.Description);
-            LanguageAPI.Add(item.LoreToken, attrib.LoreText);
+            LanguageAPI.Add(item.LoreToken, attrib.LoreText ?? (loreText.ContainsKey(item.InternalName) ? loreText[item.InternalName] : DEFAULT_LORE));
         }
 
         private static void LoadAssetsAndInit(CustomBuffBase buff, AssetBundle bundle)
@@ -190,7 +223,6 @@ namespace NMod
 
         public static void Update()
         {
-            foreach (var value in LoadedCustomItems.Values) value.Update();
             foreach (var value in LoadedCustomBuffs.Values) value.Update();
         }
     }

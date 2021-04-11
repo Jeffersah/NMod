@@ -2,14 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine.Networking;
 
 namespace NMod.Items
 {
     [NModItem(
           "Snake Eyes",
           "Chance to instantly kill enemies",
-          "<style=cIsUtility>1%</style> (+1% per stack) chance to instantly kill enemies when you deal more than <style=cIsUtility>10%</style> (-1% per stack) of their HP in one hit.",
-          "The Eyes decide who lives and who dies")]
+          "<style=cIsUtility>1%</style> (+1% per stack) chance to instantly kill enemies when you deal more than <style=cIsUtility>10%</style> (-1% per stack) of their HP in one hit.")]
     class SnakeEyes : CustomItemBase
     {
         const float BASE_PERC = .01f;
@@ -21,6 +21,9 @@ namespace NMod.Items
         public static string Name => nameof(SnakeEyes).ToLower();
         public override string InternalName => Name;
         public override ItemTier Tier => ItemTier.Tier2;
+        public override ItemTag[] Tags => new ItemTag[] {
+            ItemTag.Damage,
+        };
 
         public override void RegisterHooks(ItemIndex itemIndex)
         {
@@ -34,7 +37,7 @@ namespace NMod.Items
                         int itemCount = attackerBody.master.inventory.GetItemCount(itemIndex);
                         if (itemCount > 0)
                         {
-                            float minDamageForProc = StackUtils.InverseHyperbolicStack(itemCount, HP_LIMIT, HP_LIMIT_ADJ) * self.body.maxHealth;
+                            float minDamageForProc = StackUtils.ExponentialStack(itemCount, HP_LIMIT, HP_LIMIT_ADJ) * self.body.maxHealth;
                             float instakillChance = StackUtils.HyperbolicStack(itemCount, BASE_PERC, ADD_PERC);
                             float roll = UnityEngine.Random.Range(0f, 1f);
                             if(roll < instakillChance && damageInfo.damage >= minDamageForProc)

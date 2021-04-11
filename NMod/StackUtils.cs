@@ -10,13 +10,17 @@ namespace NMod
         {
             return baseAmt + perItem * (itemCount - 1);
         }
+        public static int LinearStack(int itemCount, int baseAmt, int perItem)
+        {
+            return baseAmt + perItem * (itemCount - 1);
+        }
 
         public static float HyperbolicStack(int itemCount, float baseAmt, float perStack)
         {
             return 1 - (float)((1 - baseAmt) * Math.Pow(1 - perStack, itemCount - 1));
         }
 
-        public static float InverseHyperbolicStack(int itemCount, float baseAmt, float perStack)
+        public static float ExponentialStack(int itemCount, float baseAmt, float perStack)
         {
             return (float)(baseAmt * Math.Pow(perStack, itemCount));
         }

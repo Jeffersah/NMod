@@ -8,8 +8,7 @@ namespace NMod.Items
     [NModItem(
         "Panic Necklace",
         "Move faster after taking damage",
-        "Increases your movement speed by <style=cIsUtility>20%</style> (+20% per stack) for <style=cIsUtility>5 seconds</style> after you take damage",
-        "Found in an all but abandoned wooden chest on a decrepit world. With it was a note, which read simply: \"The Eye of Chithulu is coming. Do Not Panic.\"")]
+        "Increases your movement speed by <style=cIsUtility>20%</style> (+20% per stack) for <style=cIsUtility>5 seconds</style> after you take damage")]
     class PanicNecklace : CustomItemBase
     {
         const float BASE_TIME = 5;
@@ -21,6 +20,9 @@ namespace NMod.Items
         public static string Name => "panicnecklace";
         public override string InternalName => Name;
         public override ItemTier Tier => ItemTier.Tier1;
+        public override ItemTag[] Tags => new ItemTag[] {
+            ItemTag.Utility,
+        };
 
         public override void RegisterHooks(ItemIndex itemIndex)
         {
